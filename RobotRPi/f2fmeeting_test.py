@@ -56,6 +56,13 @@ while True:
         frame3, c, d = detect_color(frame.copy(), "red1")
         time.sleep(0.1)
         cv2.imshow("Adaptive Threshold", frame1)
+
+        plt.plot(robot.x_axis, robot.proportional_array)
+        plt.plot(robot.x_axis, robot.integral_array)
+        plt.plot(robot.x_axis, robot.derivative_array)
+        plt.plot(robot.x_axis, robot.cx)
+        plt.show()
+
         if RUNNING:
             #robot.line_movement(cx, frame_width, allowed_x_interval, speed_dif, half_frame, optimum_speed)
             #robot.line_movement_P(cx, 19.0, 80)

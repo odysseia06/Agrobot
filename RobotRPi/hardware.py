@@ -1,6 +1,9 @@
 import pigpio
 import time
 import RPi.GPIO as GPIO
+import numpy as np
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 
 class Motor:
     ''' To control the motor, 3 pins are necessary. Pwm pin generates pwm signal to control the voltage of the dc motor. On a constant frequency,
@@ -95,11 +98,17 @@ class Robot:
         self.left.pi.write(16, 0)
         self.left.pi.write(8, 1)
         self.left.pi.write(7, 1)
+
     def init_robot(self):
         ''' Initialize the motors and set robot to ready to move. '''
         self.left.init_motor()
         self.right.init_motor()
-        
+        self.proportional_array = np.array([])
+        self.integral_array = np.array([])
+        self.derivative_array = np.array([])
+        self.x_axis = np.array([])
+        self.x=0
+
     def start(self, dc, forward=True):
         ''' Start the robot with the given speed. '''
         self.left.start_motor(dc, forward=forward)
@@ -170,3 +179,22 @@ class Robot:
         self.right.set_dc(drive_speed - turn_rate)       
         last_error = error
         print("Left: %s , Right: %s , cx = %s" %(self.left.dutycycle, self.right.dutycycle, cx))
+
+    def plot_movement(self, cx, drive_speed, half_frame, integral, derivative, last_error):
+            proportional_gain = 0.03
+            integral_gain = 0.005
+            derivative_gain = 0.001
+            error = cx - half_frame
+            integral = integral + error
+            derivative = error - last_error
+            turn_rate = proportional_gain * error + integral_gain * integral + derivative_gain * derivative
+            self.left.set_dc(drive_speed + turn_rate)
+            self.right.set_dc(drive_speed - turn_rate)       
+            last_error = error
+            print("Left: %s , Right: %s , cx = %s" %(self.left.dutycycle, self.right.dutycycle, cx))
+           
+            x = x + 1
+            self.x_axis.append(x)
+            self.proportional_array.append(error)
+            self.integral_array.append(integral)
+            self.derivative_array.append(derivative)
