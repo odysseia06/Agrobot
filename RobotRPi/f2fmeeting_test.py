@@ -4,6 +4,7 @@ import cv2
 from stream import *
 import socket
 import threading
+from matplotlib.animation import FuncAnimation
 
 frame_width = 160
 allowed_x_interval = 2
@@ -45,8 +46,6 @@ robot = Robot(ml, mr)
 robot.init_robot()
 robot.start(20)
 
-
-
 while True:
     try:
         frame = s.read()
@@ -57,16 +56,11 @@ while True:
         time.sleep(0.1)
         cv2.imshow("Adaptive Threshold", frame1)
 
-        plt.plot(robot.x_axis, robot.proportional_array)
-        plt.plot(robot.x_axis, robot.integral_array)
-        plt.plot(robot.x_axis, robot.derivative_array)
-        plt.plot(robot.x_axis, robot.cx)
-        plt.show()
-
         if RUNNING:
             #robot.line_movement(cx, frame_width, allowed_x_interval, speed_dif, half_frame, optimum_speed)
             #robot.line_movement_P(cx, 19.0, 80)
             robot.line_movement_PID(cx, 18.0, 80, integral, derivative, last_error)
+            plt.pause(0.05)
         else:
             robot.stop()
         if c is not None and CHARGE:
@@ -89,3 +83,5 @@ while True:
         client_socket.sendall(bytes("{}".format("DONE").encode("utf-8")))
         s.stop()
         break
+
+plt.show()
