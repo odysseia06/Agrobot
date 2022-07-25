@@ -55,5 +55,5 @@ while True:
     print(integral)
     plt.pause(0.05)
 
-plt.show()
+    
 

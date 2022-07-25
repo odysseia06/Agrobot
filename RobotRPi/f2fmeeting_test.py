@@ -83,5 +83,3 @@ while True:
         client_socket.sendall(bytes("{}".format("DONE").encode("utf-8")))
         s.stop()
         break
-
-plt.show()
